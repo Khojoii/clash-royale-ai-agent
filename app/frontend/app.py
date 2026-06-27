@@ -16,20 +16,15 @@ st.set_page_config(page_title="Clash Royale AI Coach", layout="centered")
 st.title("Clash Royale AI Coach")
 st.markdown("Enter your player tag to get started.")
 
-tag = st.text_input("Player Tag", placeholder="#C2C0L2QLR")
+tag = st.text_input("Player Tag", placeholder="#XXXXXXXXX")
 
 if st.button("Analyze") and tag:
     logger.info("User requested analysis for tag=%s", tag)
     with st.spinner("Fetching player data..."):
-        try:
-            player = get_player_info(tag)
-            cards = get_player_cards(tag)
-            battles = get_recent_battles(tag)
-            chests = get_upcoming_chests(tag)
-        except Exception as e:
-            st.error(f"Failed to fetch data: {e}")
-            logger.error("Analysis failed for tag=%s: %s", tag, str(e))
-            st.stop()
+        player = get_player_info(tag)
+        cards = get_player_cards(tag)
+        battles = get_recent_battles(tag)
+        chests = get_upcoming_chests(tag)
 
     logger.info("Displaying data for player %s", player.name)
     st.subheader(f"Player: {player.name}")
