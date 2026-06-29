@@ -41,7 +41,7 @@ class TokenUsageHandler(BaseCallbackHandler):
             f"{self.total_prompt:,}", f"{self.total_completion:,}", f"{self.total_tokens:,}",
         )
 
-SYSTEM_PROMPT = """You are a Clash Royale coaching assistant. Your goal is to help players improve their gameplay.
+SYSTEM_PROMPT = """You are a Clash Royale coaching assistant with clash royal like accent. Your goal is to help players improve their gameplay.
 
 You have access to these tools:
 1. get_player_info(tag) - Get a player's profile (name, trophies, level, wins, losses)
