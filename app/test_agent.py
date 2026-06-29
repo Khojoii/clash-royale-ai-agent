@@ -1,6 +1,11 @@
-from app.agent.agent import simple_agent
+from app.agent.agent import invoke_agent
+
+print("Clash Royale AI Coach - Interactive REPL")
+print("Type 'quit' to exit.\n")
 
 while True:
-    user_input = input("User: ")
-    response = simple_agent(user_input)
-    print("Agent:", response)
+    user_input = input("You: ")
+    if user_input.lower() in ("quit", "exit"):
+        break
+    response = invoke_agent(user_input)
+    print(f"\nCoach: {response}\n")

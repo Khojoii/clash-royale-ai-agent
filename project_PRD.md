@@ -299,6 +299,7 @@ Create the first autonomous AI Agent.
 - Prompt engineering
 - Tool calling
 - Multi-step reasoning
+- chat template for frontend
 
 ### Deliverable
 

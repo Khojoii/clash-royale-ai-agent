@@ -5,38 +5,32 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 import streamlit as st
 from app.logger import get_logger
-from app.tools.player import get_player_info
-from app.tools.cards import get_player_cards
-from app.tools.battles import get_recent_battles
+from app.agent.agent import invoke_agent
 
 logger = get_logger("frontend")
 
 st.set_page_config(page_title="Clash Royale AI Coach", layout="centered")
 st.title("Clash Royale AI Coach")
-st.markdown("Enter your player tag to get started.")
+st.markdown("Chat with your AI coach. Share your player tag (e.g. `#XXXXXXXXX`) to get started.")
 
-tag = st.text_input("Player Tag", placeholder="#XXXXXXXXX")
+if "messages" not in st.session_state:
+    st.session_state.messages = [
+        {"role": "assistant", "content": "Hi! I'm your Clash Royale coach. Share your player tag and I'll help you improve your game."}
+    ]
 
-if st.button("Analyze") and tag:
-    logger.info("User requested analysis for tag=%s", tag)
-    with st.spinner("Fetching player data..."):
-        player = get_player_info(tag)
-        cards = get_player_cards(tag)
-        battles = get_recent_battles(tag)
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
 
-    logger.info("Displaying data for player %s", player.name)
-    st.subheader(f"Player: {player.name}")
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Trophies", player.trophies)
-    col2.metric("Level", player.expLevel)
-    col3.metric("Wins", player.wins)
-    col4.metric("Losses", player.losses)
+if prompt := st.chat_input("Ask your coach..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
 
-    with st.expander("Cards"):
-        for c in cards.items:
-            st.write(f"{c.name} — Level {c.level}/{c.maxLevel}")
-
-    with st.expander("Recent Battles"):
-        for b in battles[-5:]:
-            st.write(f"{b.type} — Team: {b.team[0].name} vs {b.opponent[0].name}")
-
+    with st.chat_message("assistant"):
+        with st.spinner("Thinking..."):
+            logger.info("User prompt: %s", prompt[:80])
+            history = [m for m in st.session_state.messages[:-1] if m["role"] != "system"]
+            response = invoke_agent(prompt, history=history)
+        st.markdown(response)
+    st.session_state.messages.append({"role": "assistant", "content": response})

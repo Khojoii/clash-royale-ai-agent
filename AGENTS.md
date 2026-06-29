@@ -14,18 +14,21 @@ python -m app.test_agent
 
 # Verify API connectivity
 python -c "from app.tools.player import get_player_info; p = get_player_info('#XXXXXXXXX'); print(p.name)"
+
+# One-shot agent query
+python -c "from app.agent.agent import invoke_agent; print(invoke_agent('analyze player #XXXXXXXXX'))"
 ```
 
 ## Architecture
 
 ```
 app/main.py              → FastAPI entrypoint (root redirects to /docs)
-app/backend/routes.py    → API routes under /api prefix
-app/frontend/app.py      → Streamlit UI
+app/backend/routes.py    → API routes under /api prefix (+ POST /api/chat)
+app/frontend/app.py      → Streamlit chat UI (uses agent directly)
 app/agent/agent.py       → LangChain agent (create_agent, LangGraph-based)
 app/services/clash_api.py→ Clash Royale API client
 app/tools/               → Tool functions wrapping API calls
-app/models/              → Pydantic models
+app/models/              → Pydantic models (includes chat.py, cards.py)
 app/logger.py            → Rotating file logger → LOG/app.log
 ```
 
@@ -40,7 +43,67 @@ app/logger.py            → Rotating file logger → LOG/app.log
 - **Python 3.14+**: Pydantic V1 compat warning on every import — cosmetic, can be ignored.
 - **Dead code**: `app/tools/clan.py` + `app/models/clan.py` are wired but not imported anywhere.
 - **Tests**: `python -m pytest tests/ -v` — uses `unittest.mock` to mock the ClashAPI client.
+- **`Card.visual_level()`**: `level + (16 - maxLevel)` converts API internal levels to in-game visual levels (all cap at 16). E.g., API `level=10, maxLevel=14` (rare) → visual `12/16`.
+- **Agent singleton**: `create_coach_agent()` caches the CompiledStateGraph in `_agent_instance` after first creation.
+- **FastAPI agent route**: `POST /api/chat` accepts `{"message": "..."}` and returns `{"response": "..."}`, same logic as direct Python invocation.
+
+## Git Workflow
+
+After completing any implementation:
+
+- Summarize the changes.
+- Ask whether this work should be committed now or combined with future changes.
+- Never commit automatically.
+- Never create branches.
+- Never push to any remote repository.
+- Never rewrite Git history.
+
+## Logging
+
+Use the project's `logger.py` in every new module and feature.
+
+Log:
+- API requests
+- Tool execution
+- Service calls
+- Agent decisions
+- External API requests
+- Warnings
+- Exceptions
+- Important state changes
+
+Do not use `print()` for debugging.
+
+Never log:
+- API keys
+- Secrets
+- Tokens
+- Sensitive environment variables
+
+## Dependencies
+
+You may install new Python packages if they improve the implementation.
+
+When installing a package:
+- Explain why it is needed.
+- Prefer actively maintained libraries.
+- Avoid unnecessary dependencies.
+## Python Version
+
+Target Python version: 3.11
+
+Write code compatible with Python 3.11.
+Avoid features introduced in newer Python versions.
+
+## Planning
+
+Before writing code:
+
+1. Briefly explain the implementation plan.
+2. Identify the files that will be modified.
+3. If requirements are ambiguous, ask for clarification before coding.
+4. Modify the minimum number of files necessary.
 
 ## Project State
 
-Sprint 1 (Foundation) complete per `project_PRD.md`. Roadmap: 6 sprints total. Current deliverable: player data retrievable from official Clash Royale API.
+Sprint 1–3 complete per `project_PRD.md`. Roadmap: 6 sprints total. Current deliverable: autonomous AI agent retrieves player data, analyzes card collection & battle history, and generates personalized coaching.
