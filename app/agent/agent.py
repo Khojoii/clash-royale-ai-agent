@@ -119,7 +119,7 @@ def create_coach_agent(openai_api_key: str | None = None):
     logger.info("Creating LangChain coach agent with gpt-4o-mini")
     llm = ChatOpenAI(
         model="gpt-4o-mini",
-        base_url="https://api.avalai.ir/v1",
+        base_url=os.getenv("OPENAI_BASE_URL") or None,
         temperature=0,
         api_key=key,
     )
