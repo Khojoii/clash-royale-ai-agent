@@ -56,7 +56,6 @@ Players returning after balance changes who need help adapting to the current me
 - Retrieve player profile
 - Retrieve player card collection
 - Retrieve recent battle history
-- Retrieve upcoming chests
 
 ## AI Coaching
 
@@ -148,7 +147,7 @@ clash-royale-ai-agent/
 │   │      player.py
 │   │      cards.py
 │   │      battles.py
-│   │      chests.py
+│   │    
 │   │
 │   └── main.py
 │
@@ -191,7 +190,6 @@ Example tools:
 - `get_player_info()`
 - `get_player_cards()`
 - `get_recent_battles()`
-- `get_upcoming_chests()`
 - `get_clan_info()`
 - `get_card_information()`
 
@@ -279,7 +277,6 @@ Build reusable tools.
 - Implement `get_player_info()`
 - Implement `get_player_cards()`
 - Implement `get_recent_battles()`
-- Implement `get_upcoming_chests()`
 - Create Pydantic models
 - Write unit tests
 

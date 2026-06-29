@@ -39,7 +39,7 @@ app/logger.py            → Rotating file logger → LOG/app.log
 - **`.env`** requires `CR_API_KEY` and `OPENAI_API_KEY`.
 - **Python 3.14+**: Pydantic V1 compat warning on every import — cosmetic, can be ignored.
 - **Dead code**: `app/tools/clan.py` + `app/models/clan.py` are wired but not imported anywhere.
-- **No test framework or lint config** configured yet.
+- **Tests**: `python -m pytest tests/ -v` — uses `unittest.mock` to mock the ClashAPI client.
 
 ## Project State
 
