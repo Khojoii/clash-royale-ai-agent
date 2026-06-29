@@ -6,8 +6,8 @@
 # FastAPI (port 8000)
 python -m uvicorn app.main:app --reload
 
-# Streamlit UI (port 8501)
-streamlit run app/frontend/app.py --server.port 8501
+# Streamlit UI (port 8501) — must run from venv
+.\.venv\Scripts\python.exe -m streamlit run app/frontend/app.py --server.port 8501
 
 # Quick agent test (interactive REPL)
 python -m app.test_agent

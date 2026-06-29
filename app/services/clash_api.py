@@ -5,14 +5,28 @@ from app.logger import get_logger
 
 logger = get_logger("clash_api")
 
+_override_api_key = None
+
+def set_override_api_key(key: str | None):
+    global _override_api_key
+    _override_api_key = key
+    logger.info("ClashAPI override key %s", "set" if key else "cleared")
+
+def _resolve_api_key():
+    if _override_api_key:
+        return _override_api_key
+    load_dotenv()
+    return os.getenv("CR_API_KEY")
+
 class ClashAPI:
     def __init__(self):
         load_dotenv()
         self.base_url = "https://api.clashroyale.com/v1"
-        self.api_key = os.getenv("CR_API_KEY")
+        self.api_key = _resolve_api_key()
         logger.info("ClashAPI initialized")
 
     def _get(self, url, endpoint_name=""):
+        self.api_key = _resolve_api_key()
         headers = {"Authorization": f"Bearer {self.api_key}"}
         logger.debug("Calling %s: %s", endpoint_name, url)
         try:
