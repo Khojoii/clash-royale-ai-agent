@@ -13,37 +13,21 @@ from app.agent.agent import invoke_agent
 logger = get_logger("frontend")
 
 logo_path = os.path.join(os.path.dirname(__file__), "..", "..", "Logo", "CR-agent_logo.png")
+avatar_b64 = None
 if os.path.exists(logo_path):
-    img = Image.open(logo_path)
-    w, h = img.size
-    # header logo (max 150h)
-    if h > 150:
-        ratio = 150.0 / h
-        img_h = img.resize((int(w * ratio), 150), Image.LANCZOS)
-    else:
-        img_h = img.copy()
-    buf_h = BytesIO()
-    img_h.save(buf_h, format="PNG")
-    LOGO_HEADER = base64.b64encode(buf_h.getvalue()).decode()
+    img = Image.open(logo_path).resize((32, 32), Image.LANCZOS)
+    buf = BytesIO()
+    img.save(buf, format="PNG")
+    avatar_b64 = base64.b64encode(buf.getvalue()).decode()
 
-    # favicon (32x32)
-    img_f = img.resize((32, 32), Image.LANCZOS)
-    buf_f = BytesIO()
-    img_f.save(buf_f, format="PNG")
-    LOGO_FAVICON = base64.b64encode(buf_f.getvalue()).decode()
-else:
-    LOGO_HEADER = None
-    LOGO_FAVICON = None
+LOGO_FAVICON = avatar_b64
+LOGO_AVATAR = avatar_b64
 
 st.set_page_config(page_title="Clash Royale AI Coach", layout="centered")
 
 favicon_html = ""
 if LOGO_FAVICON:
     favicon_html = f'<link rel="icon" href="data:image/png;base64,{LOGO_FAVICON}" type="image/png">'
-
-header_logo_html = ""
-if LOGO_HEADER:
-    header_logo_html = f'<img src="data:image/png;base64,{LOGO_HEADER}" alt="CR Agent Logo" class="header-logo">'
 
 st.markdown(f"""
 <style>
@@ -68,11 +52,6 @@ st.markdown(f"""
         padding: 0.5rem 0 0.5rem 0;
         border-bottom: 1px solid rgba(255, 215, 0, 0.15);
         margin-bottom: 1.5rem;
-    }}
-
-    .header-logo {{
-        height: 80px;
-        margin-bottom: 0.25rem;
     }}
 
     .main-header h1 {{
@@ -331,11 +310,6 @@ st.markdown(f"""
         color: #ccd6f6 !important;
     }}
 
-    .welcome-logo {{
-        width: 100px;
-        margin-bottom: 1rem;
-    }}
-
     div[data-testid="stChatInput"] {{
         position: fixed;
         bottom: 0;
@@ -359,7 +333,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 st.markdown(
-    f'<div class="main-header">{header_logo_html}'
+    '<div class="main-header">'
     '<h1>Clash Royale AI Coach</h1>'
     '<div class="subtitle">Your personal AI-powered battle analyst & deck strategist</div></div>',
     unsafe_allow_html=True,
@@ -438,12 +412,9 @@ if "messages" not in st.session_state:
     st.session_state.cr_ok = bool(os.getenv("CR_API_KEY"))
 
 if not st.session_state.messages:
-    welcome_logo = ""
-    if LOGO_HEADER:
-        welcome_logo = f'<img src="data:image/png;base64,{LOGO_HEADER}" alt="CR Agent Logo" class="welcome-logo">'
     st.markdown(
-        f'<div style="text-align:center; padding:3rem 1rem;">'
-        f'{welcome_logo}'
+        '<div style="text-align:center; padding:3rem 1rem;">'
+        '<div style="font-size:3rem; margin-bottom:1rem;">🏆</div>'
         '<div style="color:#8892b0; font-size:1.1rem; font-weight:500; margin-bottom:0.5rem;">'
         'Welcome to Clash Royale AI Coach</div>'
         '<div style="color:#4a5578; font-size:0.9rem; max-width:400px; margin:0 auto;">'
@@ -452,10 +423,12 @@ if not st.session_state.messages:
         unsafe_allow_html=True,
     )
 
+assistant_avatar_html = f'<img src="data:image/png;base64,{LOGO_AVATAR}" style="width:100%;height:100%;border-radius:6px;object-fit:cover">' if LOGO_AVATAR else "🤖"
+
 for i, msg in enumerate(st.session_state.messages):
     role = msg["role"]
     content = msg["content"]
-    avatar_icon = "🫅" if role == "user" else "🤖"
+    avatar_icon = "🫅" if role == "user" else assistant_avatar_html
     avatar_class = "user" if role == "user" else "assistant"
 
     html = (
@@ -482,11 +455,11 @@ if prompt := st.chat_input("Ask your coach...", key="chat_input"):
 
     loading_html = (
         '<div class="chat-row">'
-        '<div class="chat-avatar assistant">🤖</div>'
+        f'<div class="chat-avatar assistant">{assistant_avatar_html}</div>'
         '<div class="loading-container">'
         '<div class="loading-spinner"></div>'
         '<div class="loading-dots"><span></span><span></span><span></span></div>'
-        '<span class="loading-text">Analyzing your Clash Royale data...</span>'
+        '<span class="loading-text">Analyzing... </span>'
         '</div>'
         '</div>'
     )
@@ -507,7 +480,7 @@ if prompt := st.chat_input("Ask your coach...", key="chat_input"):
     finally:
         loading_placeholder.empty()
 
-    avatar_icon = "🤖"
+    avatar_icon = assistant_avatar_html
     html = (
         f'<div class="chat-row">'
         f'<div class="chat-avatar assistant">{avatar_icon}</div>'
