@@ -41,10 +41,6 @@ class ClashAPI:
         tag = tag.replace("#", "%23")
         return self._get(f"{self.base_url}/players/{tag}/battlelog", "get_recent_battles")
 
-    def get_upcoming_chests(self, tag: str):
-        tag = tag.replace("#", "%23")
-        return self._get(f"{self.base_url}/players/{tag}/upcomingchests", "get_upcoming_chests")
-
     def get_clan(self, tag: str):
         tag = tag.replace("#", "%23")
         return self._get(f"{self.base_url}/clans/{tag}", "get_clan")

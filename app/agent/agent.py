@@ -8,7 +8,6 @@ from app.logger import get_logger
 from app.tools.player import get_player_info as _get_player_info
 from app.tools.cards import get_player_cards as _get_player_cards
 from app.tools.battles import get_recent_battles as _get_recent_battles
-from app.tools.chests import get_upcoming_chests as _get_upcoming_chests
 
 logger = get_logger("agent")
 load_dotenv()
@@ -36,13 +35,7 @@ def get_recent_battles(tag: str) -> str:
         lines.append(f"[{b.type}] {team} vs {opponent}")
     return "\n".join(lines[-10:])
 
-@tool
-def get_upcoming_chests(tag: str) -> str:
-    """Retrieve a player's upcoming chest cycle by their player tag."""
-    chests = _get_upcoming_chests(tag)
-    return "\n".join(f"[{c.index}] {c.name}" for c in chests.items)
-
-tools = [get_player_info, get_player_cards, get_recent_battles, get_upcoming_chests]
+tools = [get_player_info, get_player_cards, get_recent_battles]
 
 def create_coach_agent():
     logger.info("Creating LangChain coach agent with gpt-4o-mini")

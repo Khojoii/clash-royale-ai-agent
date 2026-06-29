@@ -4,7 +4,7 @@
 
 ## ✨ Features
 
-- 🔍 **Player Analysis** — Fetch profile, card collection, battle history, and chest cycle
+- 🔍 **Player Analysis** — Fetch profile, card collection, and battle history
 - 🤖 **AI-Powered Coaching** — LangChain agent with GPT-4o mini decides which tools to call
 - 💬 **Explainable Recommendations** — Every suggestion includes reasoning
 - 🌐 **Dual Interface** — FastAPI backend + Streamlit frontend
@@ -117,7 +117,6 @@ app/
 │   ├── player.py
 │   ├── cards.py
 │   ├── battle.py
-│   ├── chests.py
 │   └── clan.py
 ├── services/       # Clash Royale API client
 │   └── clash_api.py
@@ -125,7 +124,6 @@ app/
 │   ├── player.py
 │   ├── cards.py
 │   ├── battles.py
-│   ├── chests.py
 │   └── clan.py
 ├── logger.py       # Rotating file logger → LOG/app.log
 ├── main.py         # FastAPI entrypoint

@@ -8,7 +8,6 @@ from app.logger import get_logger
 from app.tools.player import get_player_info
 from app.tools.cards import get_player_cards
 from app.tools.battles import get_recent_battles
-from app.tools.chests import get_upcoming_chests
 
 logger = get_logger("frontend")
 
@@ -24,7 +23,6 @@ if st.button("Analyze") and tag:
         player = get_player_info(tag)
         cards = get_player_cards(tag)
         battles = get_recent_battles(tag)
-        chests = get_upcoming_chests(tag)
 
     logger.info("Displaying data for player %s", player.name)
     st.subheader(f"Player: {player.name}")
@@ -42,6 +40,3 @@ if st.button("Analyze") and tag:
         for b in battles[-5:]:
             st.write(f"{b.type} — Team: {b.team[0].name} vs {b.opponent[0].name}")
 
-    with st.expander("Upcoming Chests"):
-        for c in chests.items:
-            st.write(f"[{c.index}] {c.name}")
