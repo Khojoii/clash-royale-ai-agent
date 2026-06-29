@@ -81,7 +81,6 @@ Create `.env` in the project root:
 ```env
 CR_API_KEY=your_clash_royale_api_key
 OPENAI_API_KEY=your_openai_api_key
-PLAYER_TAG=#XXXXXXXXX
 ```
 
 ### Run
